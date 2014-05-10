@@ -18,10 +18,6 @@ var auth = express.basicAuth(function(username, password) {
   return password === config.password;
 });
 
-app.get('/', function(req, res) {
-  res.send('Hello');
-});
-
 app.get('/:id', function(req, res) {
   var id = req.params.id;
   db.getFile(id, function(err, file) {
@@ -59,7 +55,7 @@ if (app.get('env') === 'development') {
 // production error handler
 // no stacktraces leaked to user
 app.use(function(err, req, res, next) {
-  console.log('Fucking fail!');
+  console.log('Fail');
 });
 
 
