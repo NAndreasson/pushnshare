@@ -3,7 +3,9 @@ var http = require('http');
 var path = require('path');
 var logger = require('morgan');
 var bodyParser = require('body-parser');
+
 var db = require('./db');
+var config = require('./config');
 
 var app = express();
 
@@ -11,6 +13,10 @@ app.use(logger('dev'));
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded());
 app.use(app.router);
+
+var auth = express.basicAuth(function(username, password) {
+  return password === config.password;
+});
 
 app.get('/', function(req, res) {
   res.send('Hello');
@@ -23,8 +29,9 @@ app.get('/:id', function(req, res) {
   });
 });
 
-app.post('/', function(req, res) {
-  db.addFile('hello', function(err, result) {
+app.post('/', auth, function(req, res) {
+  var name = req.body.name;
+  db.addFile(name, function(err, result) {
     res.send(result[0]._id);
   });
 });
