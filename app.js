@@ -3,21 +3,30 @@ var http = require('http');
 var path = require('path');
 var logger = require('morgan');
 var bodyParser = require('body-parser');
+var db = require('./db');
 
 var app = express();
 
 app.use(logger('dev'));
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded());
-app.use(express.static(path.join(__dirname, 'public')));
 app.use(app.router);
 
 app.get('/', function(req, res) {
-    res.send('Hello');
+  res.send('Hello');
+});
+
+app.get('/:id', function(req, res) {
+  var id = req.params.id;
+  db.getFile(id, function(err, file) {
+    res.send(file.data);
+  });
 });
 
 app.post('/', function(req, res) {
-    res.send('Hello');
+  db.addFile('hello', function(err, result) {
+    res.send(result[0]._id);
+  });
 });
 
 /// catch 404 and forwarding to error handler
@@ -43,10 +52,7 @@ if (app.get('env') === 'development') {
 // production error handler
 // no stacktraces leaked to user
 app.use(function(err, req, res, next) {
-    res.render('error', {
-        message: err.message,
-        error: {}
-    });
+  console.log('Fucking fail!');
 });
 
 
